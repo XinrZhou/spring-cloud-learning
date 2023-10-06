@@ -5,6 +5,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>service-common</module>
+        <module>service-products-9000</module>
+        <module>service-page</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -15,8 +17,7 @@
     <groupId>com.example</groupId>
     <artifactId>spring-cloud-learning</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-cloud-learning</name>
-    <description>spring-cloud-learning</description>
+
     <properties>
         <java.version>11</java.version>
     </properties>
