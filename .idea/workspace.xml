@@ -5,33 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="12c4d6c3-5bb2-4cd6-81a6-3868586e8192" name="Changes" comment="feat: spring-cloud聚合项目">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-common/src/main/java/com/example/common/pojo/Products.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-page/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-page/src/main/java/com/example/page/PageApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-page/src/main/java/com/example/page/controller/PageController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-page/src/main/resources/application.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/src/main/java/com/example/products/ProductApplication9000.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/src/main/java/com/example/products/controller/ProductController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/src/main/java/com/example/products/mapper/ProductMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/src/main/java/com/example/products/service/ProductService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/src/main/java/com/example/products/service/impl/ProductServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service-products-9000/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/cafa358c-15e4-44fb-ae30-806cd35a8f67.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/cafa358c-15e4-44fb-ae30-806cd35a8f67/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/cafa358c-15e4-44fb-ae30-806cd35a8f67/storage_v2/_src_/schema/mysql.osA4Bg.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/cafa358c-15e4-44fb-ae30-806cd35a8f67/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/cafa358c-15e4-44fb-ae30-806cd35a8f67/storage_v2/_src_/schema/sc.UA4AAA.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/cafa358c-15e4-44fb-ae30-806cd35a8f67/storage_v2/_src_/schema/sys.zb4BAA.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-common/target/classes/com/example/common/pojo/Products.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-page/target/classes/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-page/target/classes/com/example/page/PageApplication.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-page/target/classes/com/example/page/controller/PageController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-products-9000/target/classes/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-products-9000/target/classes/com/example/products/ProductApplication9000.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-products-9000/target/classes/com/example/products/controller/ProductController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-products-9000/target/classes/com/example/products/mapper/ProductMapper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-products-9000/target/classes/com/example/products/service/ProductService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/service-products-9000/target/classes/com/example/products/service/impl/ProductServiceImpl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-common/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-common/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/service-common/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-common/src/main/resources/META-INF/maven/archetype.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-common/src/main/resources/archetype-resources/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-common/src/main/resources/archetype-resources/src/main/java/App.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-common/src/main/resources/archetype-resources/src/test/java/AppTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,31 +56,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "jdk.selected.JAVA_MODULE": "corretto-11",
-    "last_opened_file_path": "D:/workspace-2023/spring-cloud-learning/service-page/src/main/resources",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "spring.configuration.checksum": "eb1ecdf0c7cfb5cdc31c74a91b47653b",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-11&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/workspace-2023/spring-cloud-learning/service-page/src/main/resources&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;3505813b885ece987611aa32922bf191&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\workspace-2023\spring-cloud-learning\service-page\src\main\resources" />
@@ -165,7 +157,9 @@
       <workItem from="1690562076920" duration="32000" />
       <workItem from="1690567833525" duration="54000" />
       <workItem from="1696569408053" duration="4546000" />
-      <workItem from="1696594618958" duration="2741000" />
+      <workItem from="1696594618958" duration="3095000" />
+      <workItem from="1696597925579" duration="1808000" />
+      <workItem from="1699356276253" duration="6021000" />
     </task>
     <task id="LOCAL-00001" summary="feat: spring-cloud聚合项目">
       <created>1690469585196</created>
@@ -174,7 +168,15 @@
       <option name="project" value="LOCAL" />
       <updated>1690469585196</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="feat: spring-cloud聚合项目">
+      <option name="closed" value="true" />
+      <created>1696597703644</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1696597703644</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

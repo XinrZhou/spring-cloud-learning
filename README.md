@@ -134,3 +134,34 @@ Spring Cloud 是一系列框架的有序集合，是一个微服务相关规范�
 - 网关拦截、路由转发。Gateway
 - 统一认证。Gateway
 - 集中式配置管理、配置信息自动更新。Config、Bus
+
+## 第二代Spring Cloud核心组件
+### SCA组件
+Spring Cloud是若干框架的集合，包括spring-cloud-config、spring-cloud-bus等近20个子项目，提供了服务治理、服务网关、智能路由、负载均衡、分布式消息队列等领域的解决方案
+#### Spring Cloud Alibaba开源组件
+- Nacos：动态服务发现、配置管理和服务管理平台
+- Sentinel：把流量作为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性
+- RocketMQ：基于高可用分布式集群技术，提供低延时、高可靠的消息发布与订阅服务
+- Dubbo：高性能Java RPC框架
+- Seata：高性能微服务分布式事务解决方案
+- Arthas：Java动态追踪工具
+### Nacos服务注册和配置中心
+Nacos官网：https://nacos.io
+#### Nacos介绍
+Nacos：注册中心+配置中心组合（Nacos = Eureka + Config + Bus）
+Nacos功能特性：
+- 服务发现与健康检查
+- 动态配置管理
+- 动态DNS服务
+- 服务和元数据管理
+#### 底层原理
+Nacos底层：Ribbon
+例如：restTemplate.getForObject("http://microservice-provider-user/" + id, User.class)调用被Ribbon LoadBalancerInterceptor拦截，拦截后LoadBalancerClient获取负载均衡器，负载均衡器根据负载均衡算法挑选一个server
+#### 微服务上下线如何实现动态感知
+1.4.X
+- 上线：任务启动时自动注册到服务注册中心，Dubbo底层有一个定时任务，定时拉取服务列表替换本地缓存
+- 下线：系统启动时每隔一段时间给服务端发心跳任务，若超出规定时间还未给服务端发送心跳任务，就会将该机器从注册表删除
+2.X
+- 底层：gRPC。性能比HTTP高很多
+- 注册时客户端和服务端建立长连接，上线时
+
