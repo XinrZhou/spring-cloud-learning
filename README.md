@@ -157,6 +157,7 @@ Nacos功能特性：
 #### 底层原理
 Nacos底层：Ribbon
 例如：restTemplate.getForObject("http://microservice-provider-user/" + id, User.class)调用被Ribbon LoadBalancerInterceptor拦截，拦截后LoadBalancerClient获取负载均衡器，负载均衡器根据负载均衡算法挑选一个server
+Nacos本身是一个SpringBoot Web应用，对外暴露http接口
 #### 微服务上下线如何实现动态感知
 1.4.X
 - 上线：任务启动时自动注册到服务注册中心，Dubbo底层有一个定时任务，定时拉取服务列表替换本地缓存
