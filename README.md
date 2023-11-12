@@ -82,6 +82,19 @@ API 请求调用统一接入 API 网关层，由网关转发请求
 - 纵向拆分：按照业务模块拆分
 - 横向拆分：抽取公共服务，提高复用性
 
+### 远程调用  
+拆分后，某些数据不在同一服务，无法直接调用本地方法查询数据  
+
+Spring提供了一个RestTemplate工具，可以实现Http请求的发送
+- 注册RestTemplate到Spring容器
+```java
+@Bean
+public RestTemplate restTemplate() {
+    return new RestTemplate();
+}
+```
+- 发起远程调用
+
 ## Spring Cloud 综述
 
 官网：https://spring.io/projects/spring-cloud
