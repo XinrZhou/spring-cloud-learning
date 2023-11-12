@@ -6,13 +6,9 @@
         <artifactId>spring-cloud-learning</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-
-    <artifactId>service-page</artifactId>
-
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
+    <artifactId>cart-service</artifactId>
+    <name>Archetype - cart-service</name>
+    <url>http://maven.apache.org</url>
 
     <dependencies>
         <!--common-->
