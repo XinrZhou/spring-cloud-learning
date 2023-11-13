@@ -42,12 +42,6 @@ SOA：面向服务的架构。垂直架构 + Dubbo 框架（服务之间相互�
 
 缺点：分布式复杂难以管理、分布式链路跟踪困难
 
-#### 服务注册与服务发现
-
-**服务注册**：<u>服务提供者</u> 将所提供的服务信息注册/登记到 <u>注册中心</u>
-
-**服务发现**：<u>服务消费者</u> 从 <u>注册中心</u> 获取服务列表，根据策略选择一个服务访问
-
 #### 负载均衡
 
 将请求压力分配到多个服务器（应用服务器、数据库服务器等），以此来提高服务的性能
@@ -94,6 +88,19 @@ public RestTemplate restTemplate() {
 }
 ```
 - 发起远程调用
+### 远程调用存在的问题
+```java
+ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
+                "http://localhost:8081/items?ids={ids}",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<ItemDTO>>() {
+                },
+                Map.of("ids", CollUtil.join(itemIds, ","))
+        );
+
+```
+如果是集群，端口号该怎么写？ ———> 服务治理问题 ———> Nacos
 
 ## Spring Cloud 综述
 
@@ -174,13 +181,56 @@ Spring Cloud是若干框架的集合，包括spring-cloud-config、spring-cloud-
 - Arthas：Java动态追踪工具
 ### Nacos服务注册和配置中心
 Nacos官网：https://nacos.io
-#### Nacos介绍
+**服务注册**：<u>服务提供者</u> 将所提供的服务信息注册/登记到 <u>注册中心</u>
+
+**服务发现**：<u>服务消费者</u> 从 <u>注册中心</u> 获取服务列表，根据策略选择一个服务访问  
+
+#### 介绍
 Nacos：注册中心+配置中心组合（Nacos = Eureka + Config + Bus）
 Nacos功能特性：
 - 服务发现与健康检查
 - 动态配置管理
 - 动态DNS服务
 - 服务和元数据管理
+#### 部署
+1. docker部署
+```dockerfile
+docker run -d --name nacos2 --env-file /workspace2023/mail/nacos/custom.env -p 8848:8848 -p 9848:9848 -p 9849:9849 --restart=always nacos/nacos-server:v2.1.0-slim
+```
+2. 通过ip:port/nacos即可访问Nacos控制台，默认用户名/密码：nacos
+#### 服务注册
+1. 引入Nacos依赖
+```
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+```
+2. 配置Nacos地址：application.yml
+#### 服务发现
+消费者需要连接Nacos以拉取和订阅服务
+1. 引入Nacos discovery依赖
+2. 配置Nacos地址
+3. 服务发现
+```java
+ // 2.1* 根据服务名称获取服务的实例列表
+List<ServiceInstance> instances = discoveryClient.getInstances("item-service");
+
+if (CollUtils.isEmpty(instances)) {
+    return;
+}
+// 2.2* 负载均衡，从实例表中挑选一个实例
+ServiceInstance instance = instances.get(RandomUtil.randomInt(instances.size()));
+```
+#### 三个角色
+- 服务提供者：暴露服务接口，供其它服务调用
+- 服务消费者：调用其它服务提供的接口
+- 注册中心：记录并监控微服务各实列状态，推送服务变更信息
+
+服务提供者会在启动时注册自己的信息到注册中心，消费者可以从注册中心订阅和拉取服务信息  
+
+服务提供者通过心跳机制向注册中心报告自己的健康状态，当心跳异常时注册中心会将异常服务剔除，并通知订阅该服务的消费者
+
 #### 底层原理
 Nacos底层：Ribbon
 例如：restTemplate.getForObject("http://microservice-provider-user/" + id, User.class)调用被Ribbon LoadBalancerInterceptor拦截，拦截后LoadBalancerClient获取负载均衡器，负载均衡器根据负载均衡算法挑选一个server
