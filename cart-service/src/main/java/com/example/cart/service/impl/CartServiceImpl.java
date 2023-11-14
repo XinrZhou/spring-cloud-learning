@@ -5,8 +5,9 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.api.client.ItemClient;
+import com.example.api.dto.ItemDTO;
 import com.example.cart.domain.dto.CartFormDTO;
-import com.example.cart.domain.dto.ItemDTO;
 import com.example.cart.domain.po.Cart;
 import com.example.cart.domain.vo.CartVO;
 import com.example.cart.mapper.CartMapper;
@@ -38,9 +39,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements ICartService {
 
-    private final RestTemplate restTemplate;
-
-    private final DiscoveryClient discoveryClient;
+//    private final RestTemplate restTemplate;
+//
+//    private final DiscoveryClient discoveryClient;
+    private final ItemClient itemClient;
 
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
@@ -86,7 +88,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     private void handleCartItems(List<CartVO> vos) {
         // 1.获取商品id
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
-        // 2.查询商品(单体架构时做法)
+/*        // 2.查询商品(单体架构时做法)
 //        List<ItemDTO> items = itemService.queryItemByIds(itemIds);
 
         // 2.1* 根据服务名称获取服务的实例列表
@@ -114,8 +116,9 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         }
 
         // 2.2.解析响应
-        List<ItemDTO> items = response.getBody();
+        List<ItemDTO> items = response.getBody();*/
 
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
         if (CollUtils.isEmpty(items)) {
             return;
         }

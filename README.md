@@ -62,46 +62,6 @@ API 请求调用统一接入 API 网关层，由网关转发请求
 
 功能：路由、限流、负载均衡、协议适配、黑白名单、安全防护等
 
-## 微服务拆分原则
-
-### 什么时候拆分
-- 创业型项目：先采用单体架构，快速开发，快速试错。随着规模扩大，逐渐拆分
-- 确定的大型项目：直接选择微服务架构，避免后续拆分麻烦
-### 怎么拆分
-从拆分目标来说：
-- 高内聚：每个微服务职责尽量单一，包含的业务关联度高、完整度高
-- 低耦合：每个微服务功能相对独立，尽量减少对其它服务的依赖  
-
-从拆分方式来说：
-- 纵向拆分：按照业务模块拆分
-- 横向拆分：抽取公共服务，提高复用性
-
-### 远程调用  
-拆分后，某些数据不在同一服务，无法直接调用本地方法查询数据  
-
-Spring提供了一个RestTemplate工具，可以实现Http请求的发送
-- 注册RestTemplate到Spring容器
-```java
-@Bean
-public RestTemplate restTemplate() {
-    return new RestTemplate();
-}
-```
-- 发起远程调用
-### 远程调用存在的问题
-```java
-ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
-                "http://localhost:8081/items?ids={ids}",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ItemDTO>>() {
-                },
-                Map.of("ids", CollUtil.join(itemIds, ","))
-        );
-
-```
-如果是集群，端口号该怎么写？ ———> 服务治理问题 ———> Nacos
-
 ## Spring Cloud 综述
 
 官网：https://spring.io/projects/spring-cloud
@@ -179,6 +139,46 @@ Spring Cloud是若干框架的集合，包括spring-cloud-config、spring-cloud-
 - Dubbo：高性能Java RPC框架
 - Seata：高性能微服务分布式事务解决方案
 - Arthas：Java动态追踪工具
+
+### 微服务拆分原则
+#### 什么时候拆分
+- 创业型项目：先采用单体架构，快速开发，快速试错。随着规模扩大，逐渐拆分
+- 确定的大型项目：直接选择微服务架构，避免后续拆分麻烦
+#### 怎么拆分
+从拆分目标来说：
+- 高内聚：每个微服务职责尽量单一，包含的业务关联度高、完整度高
+- 低耦合：每个微服务功能相对独立，尽量减少对其它服务的依赖
+
+从拆分方式来说：
+- 纵向拆分：按照业务模块拆分
+- 横向拆分：抽取公共服务，提高复用性
+
+#### 远程调用
+拆分后，某些数据不在同一服务，无法直接调用本地方法查询数据
+
+Spring提供了一个RestTemplate工具，可以实现Http请求的发送
+- 注册RestTemplate到Spring容器
+```java
+@Bean
+public RestTemplate restTemplate() {
+    return new RestTemplate();
+}
+```
+- 发起远程调用
+#### 远程调用存在的问题
+```java
+ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
+                "http://localhost:8081/items?ids={ids}",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<ItemDTO>>() {
+                },
+                Map.of("ids", CollUtil.join(itemIds, ","))
+        );
+
+```
+如果是集群，端口号该怎么写？ ———> 服务治理问题 ———> Nacos
+
 ### Nacos服务注册和配置中心
 Nacos官网：https://nacos.io
 **服务注册**：<u>服务提供者</u> 将所提供的服务信息注册/登记到 <u>注册中心</u>
@@ -242,10 +242,83 @@ Nacos本身是一个SpringBoot Web应用，对外暴露http接口
 2.X
 - 底层：gRPC。性能比HTTP高很多
 - 注册时客户端和服务端建立长连接
+### OpenFeign
+文档：https://springdoc.cn/spring-cloud-openfeign/  
+OpenFeign是一个声明式的http客户端，作用：基于SpringMVC常见注解，优雅实现http请求的发送
+#### 使用
+1. 引入依赖，包括OpenFeign和负载均衡组件SpringCloudLoadBalancer
+2. 通过@EnableFeignClients注解，启用OpenFeign功能
+3. 编写FeignClient
+```java
+@FeignClient("item-service")
+public interface ItemClient {
+
+    @GetMapping("/items")
+    List<ItemDTO> queryItemByIds(@RequestParam("ids") Collection<Long> ids);
+}
+
+```
+4. 使用FeignClient，实现远程调用
+```java
+List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
+```
+#### 连接池
+OpenFeign对HTTP请求做了优雅的伪装，不过其底层发起HTTP请求依赖于其他框架，包括以下三种：
+- HttpURLConnection：默认实现，不支持连接池
+- Apache HttpClient：支持连接池
+- OKHttp：支持连接池  
+
+OpenFeign整合OKHttp步骤
+1. 引入依赖
+```
+        <dependency>
+            <groupId>com.netflix.feign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+            <version>8.18.0</version>
+        </dependency>
+```
+2. 开启连接池功能
+```yaml
+feign:
+  okhttp:
+    enabled: true
+```  
+
+#### 抽象出FeignClient
+当定义的FeignClient不在SpringBootApplication的扫描包范围时，FeignClient无法使用，解决方案：
+- 方式一：指定FeignClient所在包
+```java
+@EnableFeignClients(basePackages = "com.example.api.client")
+```
+- 方式二：指定FeignClient字节码
+```java
+@EnableFeignClients(clients = {UserClient.class})
+```
+
+#### 日志
+OpenFeign只会在FeignClient所在包的日志级别为DEBUG时，才会输出日志。日志级别有4级
+- NONE：不记录任何日志信息，默认值
+- BASIC：仅记录请求的方法，URL以及响应状态码和执行时间
+- HEADERS：在BASIC的基础上，额外记录了请求和相应的头信息
+- FULL：记录所有请求和相应的明细，包括请求头、请求体和元数据  
+
+步骤
+- 声明一个类型为Logger.Level的Bean，在其中定义日志级别
+```java
+public class DefaultFeignConfig {
+    @Bean
+    public Logger.Level feignLoggerLevel() {
+        return Logger.Level.FULL;
+    }
+}
+```
+- 配置某个FeignClient的日志，可以在@FeignClient注解中声明
+- **全局配置**需要在@EnableFeignClients注解中声明
+```java
+@EnableFeignClients(basePackages = "com.example.api.client", defaultConfiguration = DefaultFeignConfig.class)
+```
 ### Sentinel流量治理组件
 Sentinel官网：https://sentinelguard.io/zh-cn/docs/introduction.html
-#### OpenFeign原理
-底层写一个代理方法，在方法中拼接url，最后借助Ribbon调用 
 #### 高并发场景保证系统高可用
 1. 降级    
 对于非核心任务，如下单时录入会员积分。异常时不回滚，使用try catch加日志（但不报错）记录异常信息，之后后台启动任务重新执行失败任务

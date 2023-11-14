@@ -8,6 +8,7 @@
         <module>service-page</module>
         <module>item-service</module>
         <module>cart-service</module>
+        <module>common-api</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
