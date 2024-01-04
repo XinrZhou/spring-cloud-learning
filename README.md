@@ -219,7 +219,7 @@ List<ServiceInstance> instances = discoveryClient.getInstances("item-service");
 if (CollUtils.isEmpty(instances)) {
     return;
 }
-// 2.2* 负载均衡，从实例表中挑选一个实例
+// 2.2* 负载均衡，从实例表中挑选一个实例（TODO：负载均衡算法）
 ServiceInstance instance = instances.get(RandomUtil.randomInt(instances.size()));
 ```
 #### 三个角色
@@ -229,7 +229,7 @@ ServiceInstance instance = instances.get(RandomUtil.randomInt(instances.size()))
 
 服务提供者会在启动时注册自己的信息到注册中心，消费者可以从注册中心订阅和拉取服务信息  
 
-服务提供者通过心跳机制向注册中心报告自己的健康状态，当心跳异常时注册中心会将异常服务剔除，并通知订阅该服务的消费者
+服务提供者通过**心跳机制**向注册中心报告自己的健康状态，当心跳异常时注册中心会将异常服务剔除，并通知订阅该服务的消费者
 
 #### 底层原理
 Nacos底层：Ribbon
