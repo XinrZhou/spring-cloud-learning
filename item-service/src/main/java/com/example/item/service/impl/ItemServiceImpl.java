@@ -1,10 +1,10 @@
 package com.example.item.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.api.dto.ItemDTO;
+import com.example.api.dto.OrderDetailDTO;
 import com.example.common.exception.BizIllegalException;
 import com.example.common.utils.BeanUtils;
-import com.example.item.domain.dto.ItemDTO;
-import com.example.item.domain.dto.OrderDetailDTO;
 import com.example.item.domain.po.Item;
 import com.example.item.mapper.ItemMapper;
 import com.example.item.service.IItemService;

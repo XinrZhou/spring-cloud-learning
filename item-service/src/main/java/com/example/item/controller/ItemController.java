@@ -2,11 +2,11 @@ package com.example.item.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.api.dto.ItemDTO;
+import com.example.api.dto.OrderDetailDTO;
 import com.example.common.domain.PageDTO;
 import com.example.common.domain.PageQuery;
 import com.example.common.utils.BeanUtils;
-import com.example.item.domain.dto.ItemDTO;
-import com.example.item.domain.dto.OrderDetailDTO;
 import com.example.item.domain.po.Item;
 import com.example.item.service.IItemService;
 import io.swagger.annotations.Api;

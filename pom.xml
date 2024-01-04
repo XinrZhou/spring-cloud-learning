@@ -9,6 +9,9 @@
         <module>item-service</module>
         <module>cart-service</module>
         <module>common-api</module>
+        <module>user-service</module>
+        <module>trade-service</module>
+        <module>pay-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

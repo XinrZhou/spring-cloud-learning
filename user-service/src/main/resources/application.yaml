@@ -1,0 +1,51 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://${hm.db.host}:3306/service-user?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: ${hm.db.pw}
+  cloud:
+    nacos:
+      server-addr: 124.223.175.150:8848
+mybatis-plus:
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+  global-config:
+    db-config:
+      update-strategy: not_null
+      id-type: auto
+logging:
+  level:
+    com.example: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+  file:
+    path: "logs/${spring.application.name}"
+knife4j:
+  enable: true
+  openapi:
+    title: 用户接口文档
+    description: "用户接口文档"
+    email: zhouxinrui02@gmail.com
+    version: v1.0.0
+    group:
+      default:
+        group-name: default
+        api-rule: package
+        api-rule-resources:
+          - com.example.user.controller
+hm:
+  jwt:
+    location: classpath:jwt.jks
+    alias: jwt
+    password: zxr123
+    tokenTTL: 30m
+feign:
+  okhttp:
+    enabled: true
