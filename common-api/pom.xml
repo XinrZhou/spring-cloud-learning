@@ -11,6 +11,12 @@
     <url>http://maven.apache.org</url>
 
     <dependencies>
+        <!--common-->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>service-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <!--OpenFeign-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -1,0 +1,44 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      server-addr: 124.223.175.150:8848
+    gateway:
+      routes:
+        - id: item-service
+          uri: lb://item-service
+          predicates:
+            - Path=/items/**,/search/**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/addresses/**,/users/**
+        - id: cart-service
+          uri: lb://cart-service
+          predicates:
+            - Path=/carts/**
+        - id: trade-service
+          uri: lb://trade-service
+          predicates:
+            - Path=/orders/**
+        - id: pay-service
+          uri: lb://pay-service
+          predicates:
+            - Path=/trade-orders/**
+      default-filters:
+        - AddRequestHeader=X-Request, Test
+my:
+  jwt:
+    location: classpath:jwt.jks
+    alias: jwt
+    password: jwt1228
+    tokenTTL: 30m
+  auth:
+    excludePaths:
+      - /search/**
+      - /users/login
+      - /items/**
+      - /hi

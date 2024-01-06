@@ -332,3 +332,76 @@ Seata官网：https://seata.io/zh-cn/
 #### 原理
 通过补偿操作，找到数据库undo log，将原来的操作进行回滚。
 说明：进行本地事务提交前，需确保拿到全局锁，会消耗性能，高并发场景一般不使用
+
+### 网关 Gateway
+负责请求的路由、转发、身份校验。Spring Cloud中网关的实现包括两种：
+- Spring Cloud Gateway：基WwebFlux响应式编程，无需调优即可获得优异性能
+- Netflix Zuul：基于Servlet阻塞式编程，需要调优才能获得优异性能
+#### 路由属性
+网关路由对应Java类型：RouteDefinition，常见属性：
+- id：路由唯一标识
+- uri：路由目标地址
+- predicates：路由断言，判断请求是否符合当前路由
+- filters：路由过滤器，对请求或响应做特殊处理
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: item-service
+          uri: lb://item-service
+          predicates:
+            - Path=/items/**,/search/**
+          filters:
+            - AddRequestHeader=X-Request, Test
+```
+过滤器在其它路由中均生效：
+```yaml
+    gateway:
+      routes:
+        - id: item-service
+          uri: lb://item-service
+          predicates:
+            - Path=/items/**,/search/**
+      default-filters:
+        - AddRequestHeader=X-Request, Test
+```
+#### 网关登录校验
+**网关请求处理流程**  
+1. HandlerMapping（默认实现：RoutePredicatedHandlerMapping）根据请求找到匹配的路由并存入上下文，然后将请求交由WebHandler处理
+2. WebHandler（默认实现：FilterWebHandler），加载网关中配置的多个过滤器，放入集合并排序，形成**过滤器链**，然后依次执行过滤器链
+3. NettyRoutingFilter：负责将**请求转发**到微服务，当微服务返回结果后存入上下文  
+
+过滤器内部包含**pre**和**post**两部分逻辑，当所有Filter和pre逻辑都依次顺序执行通过后，请求才会被路由到微服务，否则会被拦截，后续过滤器不再执行。微服务返回结果后，倒序执行Filter的post逻辑。所以，**JWT校验应在pre逻辑执行时进行**。  
+过滤器pre —> JWT校验 ——> 保存用户信息到请求头
+#### 自定义过滤器
+- GatewayFilter：路由过滤器，作用于任意指定的路由。配置到路由后生效
+- GlobalFilter：全局过滤器，作用于所有路由。声明后自动生效
+```java
+@Component
+public class MyGlobalFilter implements GlobalFilter, Ordered {
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // TODO 登录校验
+        ServerHttpRequest request = exchange.getRequest();
+        HttpHeaders headers = request.getHeaders();
+        System.out.println("headers = " + headers);
+        return chain.filter(exchange);
+    }
+
+    @Override
+    public int getOrder() {
+        // 过滤器执行顺序，值越小，优先级越高
+        return 0;
+    }
+}
+```  
+在网关的登录校验过滤器中，如何把获取到的用户信息写入请求头？使用ServerWebExchange类提供的API
+```java
+ServerWebExchange swe = exchange.mutate()
+                .request(builder -> builder.header("user-info", userInfo))
+                .build();
+```  
+**思考：如何将用户信息存储至Redis？**  
+#### OpenFeign传递用户信息(微服务之间相互调用)
+OpenFeign中提供了一个拦截器接口，所有由OpenFeign发起的请求都会调用拦截器处理请求
