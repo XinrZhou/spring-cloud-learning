@@ -194,8 +194,10 @@ Nacos功能特性：
 - 服务和元数据管理
 #### 部署
 1. docker部署
+Nacos2.x版本相比1.x新增了gRPC通信方式，因此需要新增两个端口
+
 ```dockerfile
-docker run -d --name nacos2 --env-file /workspace2023/mail/nacos/custom.env -p 8848:8848 -p 9848:9848 -p 9849:9849 --restart=always nacos/nacos-server:v2.1.0-slim
+docker run --name nacos-standalone -e MODE=standalone -e JVM_XMS=64m -e JVM_XMX=64m -e JVM_XMN=16m -p 8848:8848 -p 9848:9848 -p 9849:9849 -d nacos/nacos-server:v2.1.1 
 ```
 2. 通过ip:port/nacos即可访问Nacos控制台，默认用户名/密码：nacos
 #### 服务注册
@@ -366,13 +368,13 @@ spring:
       default-filters:
         - AddRequestHeader=X-Request, Test
 ```
-#### 网关登录校验
-**网关请求处理流程**  
+#### 网关登录校验  
+网关请求处理流程  
 1. HandlerMapping（默认实现：RoutePredicatedHandlerMapping）根据请求找到匹配的路由并存入上下文，然后将请求交由WebHandler处理
 2. WebHandler（默认实现：FilterWebHandler），加载网关中配置的多个过滤器，放入集合并排序，形成**过滤器链**，然后依次执行过滤器链
 3. NettyRoutingFilter：负责将**请求转发**到微服务，当微服务返回结果后存入上下文  
 
-过滤器内部包含**pre**和**post**两部分逻辑，当所有Filter和pre逻辑都依次顺序执行通过后，请求才会被路由到微服务，否则会被拦截，后续过滤器不再执行。微服务返回结果后，倒序执行Filter的post逻辑。所以，**JWT校验应在pre逻辑执行时进行**。  
+过滤器内部包含pre和post两部分逻辑，当所有Filter和pre逻辑都依次顺序执行通过后，请求才会被路由到微服务，否则会被拦截，后续过滤器不再执行。微服务返回结果后，倒序执行Filter的post逻辑。所以，**JWT校验应在pre逻辑执行时进行**    
 过滤器pre —> JWT校验 ——> 保存用户信息到请求头
 #### 自定义过滤器
 - GatewayFilter：路由过滤器，作用于任意指定的路由。配置到路由后生效
@@ -402,6 +404,33 @@ ServerWebExchange swe = exchange.mutate()
                 .request(builder -> builder.header("user-info", userInfo))
                 .build();
 ```  
-**思考：如何将用户信息存储至Redis？**  
+> 思考：如何将用户信息存储至Redis？
 #### OpenFeign传递用户信息(微服务之间相互调用)
 OpenFeign中提供了一个拦截器接口，所有由OpenFeign发起的请求都会调用拦截器处理请求
+### 配置管理
+Nacos：配置中心 —> 读取配置 —> 推送配置变更至网关/微服务
+
+### 其它
+#### JWT生成密钥证书jwt.jks
+1. 生成密钥证书
+```shell
+#    -alias：密钥的别名 
+#    -keyalg：使用的hash算法 
+#    -keypass：密钥的访问密码 
+#    -keystore：密钥库文件名，jwt.jks -> 生成的证书 
+#    -storepass：密钥库的访问密码
+keytool -genkeypair -alias small-tools -keyalg RSA -keypass 123456 -keystore jwt.jks -storepass 123456
+```
+2. 查询证书
+```shell
+keytool -list -keystore jwt.jks
+```
+### 填坑
+#### Open Feign集成OkHttp
+编译的时候出现依赖冲突，通过排查发现OkHttp导错包了，正确坐标：
+```
+<dependency>
+    <groupId>io.github.openfeign</groupId>
+    <artifactId>feign-okhttp</artifactId>
+</dependency>
+```

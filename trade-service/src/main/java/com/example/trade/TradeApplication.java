@@ -1,3 +1,5 @@
+package com.example.trade;
+
 import com.example.api.config.DefaultFeignConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

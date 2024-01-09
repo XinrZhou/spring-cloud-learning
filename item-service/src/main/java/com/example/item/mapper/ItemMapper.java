@@ -1,7 +1,7 @@
 package com.example.item.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.item.domain.dto.OrderDetailDTO;
+import com.example.api.dto.OrderDetailDTO;
 import com.example.item.domain.po.Item;
 import org.apache.ibatis.annotations.Update;
 
