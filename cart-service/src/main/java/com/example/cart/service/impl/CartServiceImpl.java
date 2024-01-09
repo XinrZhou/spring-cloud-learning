@@ -1,12 +1,11 @@
 package com.example.cart.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.api.client.ItemClient;
 import com.example.api.dto.ItemDTO;
+import com.example.cart.config.CartProperties;
 import com.example.cart.domain.dto.CartFormDTO;
 import com.example.cart.domain.po.Cart;
 import com.example.cart.domain.vo.CartVO;
@@ -16,16 +15,8 @@ import com.example.common.exception.BizIllegalException;
 import com.example.common.utils.BeanUtils;
 import com.example.common.utils.CollUtils;
 import com.example.common.utils.UserContext;
-
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,6 +34,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 //
 //    private final DiscoveryClient discoveryClient;
     private final ItemClient itemClient;
+
+    private final CartProperties cartProperties;
 
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
@@ -149,8 +142,10 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 
     private void checkCartsFull(Long userId) {
         int count = Math.toIntExact(lambdaQuery().eq(Cart::getUserId, userId).count());
-        if (count >= 10) {
-            throw new BizIllegalException(StrUtil.format("用户购物车课程不能超过{}", 10));
+        if (count >= cartProperties.getMaxItems()) {
+            throw new BizIllegalException(
+                    StrUtil.format("用户购物车课程不能超过{}", cartProperties.getMaxItems())
+            );
         }
     }
 

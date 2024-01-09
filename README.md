@@ -319,21 +319,6 @@ public class DefaultFeignConfig {
 ```java
 @EnableFeignClients(basePackages = "com.example.api.client", defaultConfiguration = DefaultFeignConfig.class)
 ```
-### Sentinel流量治理组件
-Sentinel官网：https://sentinelguard.io/zh-cn/docs/introduction.html
-#### 高并发场景保证系统高可用
-1. 降级    
-对于非核心任务，如下单时录入会员积分。异常时不回滚，使用try catch加日志（但不报错）记录异常信息，之后后台启动任务重新执行失败任务
-2. 限流  
-// TODO 限流算法
-3. 熔断  
-// TODO 自动化熔断原理
-原理：滑动时间窗口
-### Seata分布式事务
-Seata官网：https://seata.io/zh-cn/
-#### 原理
-通过补偿操作，找到数据库undo log，将原来的操作进行回滚。
-说明：进行本地事务提交前，需确保拿到全局锁，会消耗性能，高并发场景一般不使用
 
 ### 网关 Gateway
 负责请求的路由、转发、身份校验。Spring Cloud中网关的实现包括两种：
@@ -407,8 +392,55 @@ ServerWebExchange swe = exchange.mutate()
 > 思考：如何将用户信息存储至Redis？
 #### OpenFeign传递用户信息(微服务之间相互调用)
 OpenFeign中提供了一个拦截器接口，所有由OpenFeign发起的请求都会调用拦截器处理请求
+
 ### 配置管理
 Nacos：配置中心 —> 读取配置 —> 推送配置变更至网关/微服务
+#### 共享配置
+1. 添加配置到Nacos，例如：jdbc、MabatisPlus、Swagger等
+2. 拉取共享配置  
+SpringClouc项目启动顺序：启动 —> 拉取Nacos配置 —> 初始化ApplicationContext —> 加载application.yml —> 初始化ApplicationContext  
+> 问题：Nacos地址写在application.yml中，但是拉取Nacos配置在读取yml文件之前。如何解决？ —> 引入bootstrap.yml
+
+启动 —> 加载bootstrap.yml —> 拉取Nacos配置 —> 初始化ApplicationContext —> 加载application.yml —> 合并配置 —> 初始化ApplicationContext
+#### 配置热更新
+当修改配置文件中的配置时，微服务无需重启即可使配置生效，前提条件
+1. Nacos中要有一个与微服务名称有关的配置文件（微服务名称-profile.后缀名），例如：cart-service.yaml
+2. 微服务中要以特定方式读取需要热更新的配置属性
+```java
+@Data
+@Component
+@ConfigurationProperties(prefix = "service.cart")
+public class CartProperties {
+    private Integer maxItems;
+}
+```
+
+### 雪崩问题
+雪崩：微服务调用链路中的某个服务故障，引起整个链路中的微服务都不可用
+#### 产生原因
+- 微服务相互调用，服务提供者出现故障或阻塞
+- 服务调用者未做好异常处理，导致自身故障
+- 调用链中的所有服务级联失败，导致整个集群故障
+#### 服务保护方案
+- 请求限流：限制访问接口的请求的并发量，避免服务因流量激增出现故障（流量整形） —> 限流器
+- 线程隔离：又称舱壁模式。控制业务可用的线程数量，避免故障扩散
+- 服务熔断：由断路器统计请求的异常比例或慢调用比例，如果超出阈值会熔断该业务。熔断期间，所有请求快速失败，走fallback逻辑
+
+### Sentinel流量治理组件
+Sentinel官网：https://sentinelguard.io/zh-cn/docs/introduction.html
+#### 高并发场景保证系统高可用
+1. 降级    
+   对于非核心任务，如下单时录入会员积分。异常时不回滚，使用try catch加日志（但不报错）记录异常信息，之后后台启动任务重新执行失败任务
+2. 限流  
+   // TODO 限流算法
+3. 熔断  
+   // TODO 自动化熔断原理
+   原理：滑动时间窗口
+### Seata分布式事务
+Seata官网：https://seata.io/zh-cn/
+#### 原理
+通过补偿操作，找到数据库undo log，将原来的操作进行回滚。
+说明：进行本地事务提交前，需确保拿到全局锁，会消耗性能，高并发场景一般不使用
 
 ### 其它
 #### JWT生成密钥证书jwt.jks
@@ -426,11 +458,18 @@ keytool -genkeypair -alias small-tools -keyalg RSA -keypass 123456 -keystore jwt
 keytool -list -keystore jwt.jks
 ```
 ### 填坑
-#### Open Feign集成OkHttp
-编译的时候出现依赖冲突，通过排查发现OkHttp导错包了，正确坐标：
+1. Open Feign集成OkHttp，编译的时候出现依赖冲突，通过排查发现OkHttp导错包了，正确坐标：
 ```
 <dependency>
     <groupId>io.github.openfeign</groupId>
     <artifactId>feign-okhttp</artifactId>
 </dependency>
+```
+2. Nacos报错：please try again later，清Nacos缓存成功解决
+```shell
+docker exec -it nacos-server /bin/bash
+# data目录均为缓存，删除即可，删除之前需要做好备份
+rm -rf data
+exit
+docker restart nacos-server
 ```
