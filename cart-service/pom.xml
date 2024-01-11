@@ -17,6 +17,12 @@
             <artifactId>service-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <!--common-api-->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>common-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <!--web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -62,16 +68,20 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
+        <!--sentinel-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
         <!--OKHttp-->
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
         </dependency>
-        <!--common-api-->
+        <!--seata-->
         <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>common-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
         </dependency>
     </dependencies>
     <build>

@@ -197,7 +197,7 @@ Nacos功能特性：
 Nacos2.x版本相比1.x新增了gRPC通信方式，因此需要新增两个端口
 
 ```dockerfile
-docker run --name nacos-standalone -e MODE=standalone -e JVM_XMS=64m -e JVM_XMX=64m -e JVM_XMN=16m -p 8848:8848 -p 9848:9848 -p 9849:9849 -d nacos/nacos-server:v2.1.1 
+docker run --name nacos-standalone -e MODE=standalone -e JVM_XMS=256m -e JVM_XMX=256m -e JVM_XMN=16m -p 8848:8848 -p 9848:9848 -p 9849:9849 -d nacos/nacos-server:v2.1.1 
 ```
 2. 通过ip:port/nacos即可访问Nacos控制台，默认用户名/密码：nacos
 #### 服务注册
@@ -241,6 +241,7 @@ Nacos本身是一个SpringBoot Web应用，对外暴露http接口
 1.4.X
 - 上线：任务启动时自动注册到服务注册中心，Dubbo底层有一个定时任务，定时拉取服务列表替换本地缓存
 - 下线：系统启动时每隔一段时间给服务端发心跳任务，若超出规定时间还未给服务端发送心跳任务，就会将该机器从注册表删除  
+
 2.X
 - 底层：gRPC。性能比HTTP高很多
 - 注册时客户端和服务端建立长连接
@@ -305,7 +306,7 @@ OpenFeign只会在FeignClient所在包的日志级别为DEBUG时，才会输出�
 - FULL：记录所有请求和相应的明细，包括请求头、请求体和元数据  
 
 步骤
-- 声明一个类型为Logger.Level的Bean，在其中定义日志级别
+1. 声明一个类型为Logger.Level的Bean，在其中定义日志级别
 ```java
 public class DefaultFeignConfig {
     @Bean
@@ -314,8 +315,8 @@ public class DefaultFeignConfig {
     }
 }
 ```
-- 配置某个FeignClient的日志，可以在@FeignClient注解中声明
-- **全局配置**需要在@EnableFeignClients注解中声明
+2. 配置某个FeignClient的日志，可以在@FeignClient注解中声明
+3. **全局配置**需要在@EnableFeignClients注解中声明
 ```java
 @EnableFeignClients(basePackages = "com.example.api.client", defaultConfiguration = DefaultFeignConfig.class)
 ```
@@ -424,10 +425,14 @@ public class CartProperties {
 #### 服务保护方案
 - 请求限流：限制访问接口的请求的并发量，避免服务因流量激增出现故障（流量整形） —> 限流器
 - 线程隔离：又称舱壁模式。控制业务可用的线程数量，避免故障扩散
-- 服务熔断：由断路器统计请求的异常比例或慢调用比例，如果超出阈值会熔断该业务。熔断期间，所有请求快速失败，走fallback逻辑
+- 服务熔断：由断路器统计请求的异常比例或慢调用比例，如果超出阈值会熔断该业务。熔断期间，所有请求快速失败，走fallback逻辑；服务恢复时，放行请求
 
 ### Sentinel流量治理组件
 Sentinel官网：https://sentinelguard.io/zh-cn/docs/introduction.html
+#### 下载启动
+参考：[地址](http://124.223.175.150/#/articles/detail?id=8433249604107173888)
+#### Fallback
+- 自定义类，实现FallbackFactory，编写对某个FeignClient的fallback逻辑
 #### 高并发场景保证系统高可用
 1. 降级    
    对于非核心任务，如下单时录入会员积分。异常时不回滚，使用try catch加日志（但不报错）记录异常信息，之后后台启动任务重新执行失败任务
@@ -437,10 +442,51 @@ Sentinel官网：https://sentinelguard.io/zh-cn/docs/introduction.html
    // TODO 自动化熔断原理
    原理：滑动时间窗口
 ### Seata分布式事务
-Seata官网：https://seata.io/zh-cn/
-#### 原理
-通过补偿操作，找到数据库undo log，将原来的操作进行回滚。
-说明：进行本地事务提交前，需确保拿到全局锁，会消耗性能，高并发场景一般不使用
+Seata官网：https://seata.io/zh-cn/  
+
+分布式事务：分布式系统环境下由不同服务之间通过网络远程协作完成事务，所有事务同成功同失败
+
+#### Seata架构
+三个重要角色
+- TC：事务协调者。维护全局和分支事务的状态，协调全局事务提交或回滚
+- TM：事务管理器。定义全局事务的范围，开始、提交或回滚全局事务
+- RM：资源管理器。管理分支事务，与TC交谈以注册、报告分支事务的状态
+
+// TODO Docker部署Seata
+
+#### 分布式事务解决方案 — XA模式
+XA模式：两阶段提交，一阶段需要锁定数据库资源
+- 优点：事务强一致性，常用数据库均支持，实现简单且无代码侵入
+- 缺点：性能较差，依赖关系型数据库实现事务
+- 说明：进行本地事务提交前，需确保拿到全局锁，会消耗性能，高并发场景一般不使用
+
+一阶段：
+1. RM注册分支事务到TC
+2. RM执行分支业务sql但不提交
+3. RRM报告执行状态至TC
+
+二阶段：
+1. TC检测各分支事务执行状态：都成功，通知所有RM提交事务；都失败，通知所有RM回滚事务
+2. RM接收TC指令，提交或回滚事务  
+
+![XA模式](https://img-blog.csdnimg.cn/img_convert/d150524f5ba0bcaaa773b0a82eff4313.png)
+
+#### 分布式事务解决方案 — AT模式
+AT模式同样是分阶段提交的事务模型，但弥补了XA模型中资源锁定周期过长缺陷
+- 原理：通过补偿操作，找到数据库undo log，将原来的操作进行回滚，保证最终一致性
+
+一阶段：
+- 注册分支事务
+- 记录undo-log（数据快照）
+- 执行业务sql并提交
+- 报告事务状态  
+
+二阶段：
+- 提交时：删除undo-log
+- 回滚时：根据undo-log恢复数据到更新前
+
+
+
 
 ### 其它
 #### JWT生成密钥证书jwt.jks

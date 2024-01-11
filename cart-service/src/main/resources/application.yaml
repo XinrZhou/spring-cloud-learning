@@ -1,8 +1,11 @@
 server:
   port: 8082
-feign:
-  okhttp:
-    enabled: true
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: ${my.host}:8718
+      http-method-specify: true # 开启请求方式前缀
 
 my:
   host: 124.223.175.150
@@ -14,3 +17,8 @@ my:
   swagger:
     title: "购物车接口文档"
     package: com.example.cart.controller
+
+feign:
+  sentinel:
+    enabled: true # feign整合Sentinel
+
